@@ -28,22 +28,25 @@ The main usage is using the "show" function. It can retrieve an URL,
 a local file (markdown or html), or find a page automatically from
 the settings set under Preferences->General->Help.
 
+It doesn't matter what you give, the system will recognize if the contents are 
+HTML or Markdown and render it appropriately.
+
 Basic usage:
 
     import Help
     Help.show("Draft Line")
-    Help.show("Draft_Line")
+    Help.show("Draft_Line") # works with spaces ro underscores
     Help.show("https://wiki.freecadweb.org/Draft_Line")
-    Help.show("https://gitlab.org/myrepo/Draft_Line.md")
+    Help.show("https://gitlab.com/freecad/FreeCAD-documentation/-/raw/main/wiki/Draft_Line.md")
     Help.show("/home/myUser/.FreeCAD/Documentation/Draft_Line.md")
     Help.show("http://myserver.com/myfolder/Draft_Line.html")
     
-Preferences settings:
+Preferences keys (in "User parameter:BaseApp/Preferences/Mod/Help"):
 
     optionBrowser/optionTab/optionDialog (bool): Where to open the help dialog
     URL (string): online location
     Location (string): offline location
-    StyleSheet (string): stylesheet to style the output
+    StyleSheet (string): optional CSS stylesheet to style the output
 """
 
 import os
@@ -92,6 +95,7 @@ def show(page,view=None):
             try:
                 from PySide2 import QtWebEngineWidgets
             except:
+                # QtWebEngineWidgets not present, use the Web module
                 FreeCAD.Console.PrintWarning(WARNINGTXT+"\n")
                 import WebGui
                 WebGui.openBrowserHTML(html,baseurl,title,ICON)
@@ -104,6 +108,7 @@ def show(page,view=None):
                 else:
                     openBrowserHTML(html,baseurl,title,ICON)
     else:
+        # everything failed, we just print the output for now...
         print(md)
 
 
@@ -139,7 +144,7 @@ def get_location(page):
 
 def get_contents(location):
 
-    """retrieves markdown contents of a given page"""
+    """retrieves text contents of a given page"""
 
     if location.startswith("http"):
         try:
@@ -200,6 +205,7 @@ def convert(content,force=None):
         return m
 
     if "<html" in content:
+        # this is html already
         return content
 
     if force == "markdown":
