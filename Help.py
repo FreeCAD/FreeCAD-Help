@@ -158,7 +158,7 @@ def get_contents(location):
         return contents
     else:
         if os.path.exists(location):
-            with open(location) as f:
+            with open(location, mode='r', encoding='utf8') as f:
                 contents = f.read()
             return contents
     return ERRORTXT
