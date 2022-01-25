@@ -120,6 +120,9 @@ def get_location(page):
     location = ""
     if page.startswith("http"):
         return page
+    # offline location
+    if os.path.exists(page):
+        return page
     page = page.replace(".md","")
     if PREFS.GetBool("optionOnline",True):
         location = PREFS.GetString("URL","")
@@ -155,7 +158,7 @@ def get_contents(location):
         return contents
     else:
         if os.path.exists(location):
-            with open(location) as f:
+            with open(location, mode='r', encoding='utf8') as f:
                 contents = f.read()
             return contents
     return ERRORTXT
@@ -198,9 +201,9 @@ def convert(content,force=None):
         m = re.sub(r"^# (.*?)\n",    r"<h1>\1</h1>\n",m,flags=f) # # titles
         m = re.sub(r"!\[(.*?)\]\((.*?)\)", r'<img alt="\1" src="\2">',m,flags=f) # images
         m = re.sub(r"\[(.*?)\]\((.*?)\)",  r'<a href="\2">\1</a>',m,flags=f) # links
-        m = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>",s) # bold
-        m = re.sub(r"\*(.*?)\*", r"<i>\1</i>",s) # italic
-        m = re.sub(r"\n\n", r"<br/>",s,flags=f) # double new lines
+        m = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>",m) # bold
+        m = re.sub(r"\*(.*?)\*", r"<i>\1</i>",m) # italic
+        m = re.sub(r"\n\n", r"<br/>",m,flags=f) # double new lines
         m += "\n<br/><hr/><small>" + CONVERTTXT + "</small>"
         return m
 
