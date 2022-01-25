@@ -120,6 +120,9 @@ def get_location(page):
     location = ""
     if page.startswith("http"):
         return page
+    # offline location
+    if os.path.exists(page):
+        return page
     page = page.replace(".md","")
     if PREFS.GetBool("optionOnline",True):
         location = PREFS.GetString("URL","")
