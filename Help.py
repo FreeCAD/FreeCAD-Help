@@ -88,9 +88,10 @@ def show(page,view=None):
     pagename = os.path.basename(page.replace("_"," ").replace(".md",""))
     title = translate("Help","Help")+": " + pagename
     if FreeCAD.GuiUp:
-        from PySide2 import QtCore,QtGui
+        from PySide2 import QtCore
         if PREFS.GetBool("optionBrowser",True):
-            QtGui.QDesktopServices.openUrl(QtCore.QUrl(location))
+            import webbrowser
+            webbrowser.open_new(location)
         else:
             try:
                 from PySide2 import QtWebEngineWidgets
