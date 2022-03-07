@@ -21,6 +21,5 @@
 # *                                                                         *
 # ***************************************************************************
 
-# add help page
 import Help
-Help.addPreferencesPage()
+Help.add_preferences_page()

@@ -28,55 +28,72 @@ The main usage is using the "show" function. It can retrieve an URL,
 a local file (markdown or html), or find a page automatically from
 the settings set under Preferences->General->Help.
 
-It doesn't matter what you give, the system will recognize if the contents are 
+It doesn't matter what you give, the system will recognize if the contents are
 HTML or Markdown and render it appropriately.
 
 Basic usage:
 
     import Help
     Help.show("Draft Line")
-    Help.show("Draft_Line") # works with spaces ro underscores
+    Help.show("Draft_Line") # works with spaces or underscores
     Help.show("https://wiki.freecadweb.org/Draft_Line")
     Help.show("https://gitlab.com/freecad/FreeCAD-documentation/-/raw/main/wiki/Draft_Line.md")
     Help.show("/home/myUser/.FreeCAD/Documentation/Draft_Line.md")
     Help.show("http://myserver.com/myfolder/Draft_Line.html")
-    
+
 Preferences keys (in "User parameter:BaseApp/Preferences/Mod/Help"):
 
+    UseHelpModule (bool): if the FreeCAD help system uses this module or not (temporary)
     optionBrowser/optionTab/optionDialog (bool): Where to open the help dialog
+    optionOnline/optionOffline (bool): where to fetch the documentation from
     URL (string): online location
     Location (string): offline location
+    Suffix (string): a suffix to add to the URL, ex: /fr
     StyleSheet (string): optional CSS stylesheet to style the output
 """
 
 import os
-import FreeCAD
 import urllib
 import re
+import FreeCAD
 
 translate = FreeCAD.Qt.translate
 QT_TRANSLATE_NOOP = FreeCAD.Qt.QT_TRANSLATE_NOOP
-ERRORTXT = "###" + translate("Help","Error") + "\n\n" + translate("Help","Contents for this page could not be retrieved. Check settings under menu Edit -> Preferences -> General -> Help")
-WARNINGTXT = translate("Help","PySide2 QtWebEngineWidgets module is not available. Rendering is done with the Web module")
+
+ERRORTXT = translate("Help","Contents for this page could not be retrieved. Check settings under menu Edit -> Preferences -> General -> Help")
 LOCTXT = translate("Help","Help files location could not be determined. Please check Edit -> Preferences -> General -> Help")
 CONVERTTXT = translate("Help","There is no markdown renderer installed on your system, so this help page is rendered as is. Please install the markdown or pandoc python modules to improve the rendering of this page.")
 PREFS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Help")
 ICON = ":/icons/help-browser.svg"
-
+MENU_LINKS =    [ [translate("Help", "Home"),             "https://freecad.org"],
+                  [translate("Help", "Forum"),            "https://forum.freecad.org"],
+                  [translate("Help", "Wiki"),             "https://wiki.freecad.org"],
+                  [translate("Help", "Issues"),           "https://github.com/FreeCAD/FreeCAD/issues"],
+                  [translate("Help", "Code repository"),  "https://github.com/FreeCAD/FreeCAD"],
+                ]
+MENU_COMMANDS = [ ["applications-python.svg", translate("Help","Auto Python modules"), None,       "Std_PythonHelp"],
+                  ["freecad.svg",             translate("Help","About FreeCAD"),       None,       "Std_About"],
+                  ["WhatsThis.svg",           translate("Help","What's this?"),        "Shift+F1", "Std_WhatsThis"],
+                ]
+SUBSTITUTES =   { "Main_Page":             "README",
+                  "Online_Help_Startpage": "README",
+                }
 
 def show(page,view=None):
 
     """
     show(page,view=None):
     Opens a help viewer and shows the given help page.
-    The given help page can be a URL pointing to a markdown file,
+    The given help page can be a URL pointing to a markdown or HTML file,
     a name page / command name, or a file path pointing to a markdown
-    file. If view is given (an instance of openBrowserHTML.HelpPage or
-    any other widget with a 'setHtml()' method), the page will be
-    rendered there, otherwise in a new tab/widget
+    or HTML file. If view is given (an instance of openBrowserHTML.HelpPage or
+    any other object with a 'setHtml()' method), the page will be
+    rendered there, otherwise a new tab/widget will be created according to
+    preferences settings.
+    In non-GUI mode, this function simply outputs the markdown or HTML text.
     """
 
-    page = page.replace(" ","_")
+    page = page.replace(" ","_") # TODO: fix: there might be spaces in the file path
     location = get_location(page)
     FreeCAD.Console.PrintLog("Help: opening "+location+"\n")
     if not location:
@@ -85,30 +102,32 @@ def show(page,view=None):
     md = get_contents(location)
     html = convert(md)
     baseurl = os.path.dirname(location) + "/"
+    if baseurl.startswith("/"):
+        baseurl = "file://" + baseurl
     pagename = os.path.basename(page.replace("_"," ").replace(".md",""))
     title = translate("Help","Help")+": " + pagename
     if FreeCAD.GuiUp:
         from PySide2 import QtCore,QtGui
-        if PREFS.GetBool("optionBrowser",True):
+        if PREFS.GetBool("optionBrowser",True): # desktop web browser
             QtGui.QDesktopServices.openUrl(QtCore.QUrl(location))
         else:
             try:
                 from PySide2 import QtWebEngineWidgets
             except:
                 # QtWebEngineWidgets not present, use the Web module
-                FreeCAD.Console.PrintWarning(WARNINGTXT+"\n")
+                FreeCAD.Console.PrintLog("Help: PySide2 QtWebEngineWidgets module is not available. Rendering is done with the Web module\n")
                 import WebGui
                 WebGui.openBrowserHTML(html,baseurl,title,ICON)
             else:
-                if view:
+                if view: # reusing existing view
                     view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
                     #view.parent.parent.setWindowTitle(title)
-                elif PREFS.GetBool("optionDialog",True):
+                elif PREFS.GetBool("optionDialog",True): # floating dock window
                     openBrowserHTML(html,baseurl,title,ICON,dialog=True)
-                else:
+                else: # MDI tab
                     openBrowserHTML(html,baseurl,title,ICON)
     else:
-        # everything failed, we just print the output for now...
+        # console mode, we just print the output
         print(md)
 
 
@@ -120,14 +139,24 @@ def get_location(page):
     location = ""
     if page.startswith("http"):
         return page
+    if page.startswith("file://"):
+        return page[7:]
     # offline location
     if os.path.exists(page):
         return page
     page = page.replace(".md","")
+    page = page.replace(" ","_")
+    page = page.replace("wiki/","")
+    page = page.split("#")[0]
     if PREFS.GetBool("optionOnline",True):
         location = PREFS.GetString("URL","")
         if not location:
             location = "https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki"
+        if (page in SUBSTITUTES) and not ("wiki." in location):
+            page = SUBSTITUTES[page]
+        if page.endswith("README") and location.endswith("wiki"):
+            # use README outside the wiki folder for now...
+            location = location[:-4]
         if not location.endswith("/"):
             location += "/"
         location += page
@@ -136,11 +165,21 @@ def get_location(page):
     else:
         location = PREFS.GetString("Location","")
         if not location:
-            location = os.path.join(FreeCAD.getUserAppDataDir(),"Mod","Documentation")
+            location = os.path.join(FreeCAD.getUserAppDataDir(),"Mod","Documentation","wiki")
+        if (page in SUBSTITUTES):
+            page = SUBSTITUTES[page]
+        if page.endswith("README") and location.endswith("wiki"):
+            # use README outside the wiki folder for now...
+            location = location[:-4]
         if os.path.exists(os.path.join(location,page+".html")):
             location = os.path.join(location,page)
         else:
             location = os.path.join(location,page+".md")
+    suffix = PREFS.GetString("Suffix","")
+    if suffix:
+        if not suffix.startswith("/"):
+            suffix = "/" + suffix
+        location += suffix
     return location
 
 
@@ -150,6 +189,7 @@ def get_contents(location):
     """retrieves text contents of a given page"""
 
     if location.startswith("http"):
+        import urllib.request # otherwise it fails on first run??
         try:
             r = urllib.request.urlopen(location)
         except:
@@ -192,7 +232,7 @@ def convert(content,force=None):
             return None
 
     def convert_raw(m):
-        # simple and dirty regex-based markdown t- html
+        # simple and dirty regex-based markdown to html
         f = re.DOTALL|re.MULTILINE
         m = re.sub(r"^##### (.*?)\n",r"<h5>\1</h5>\n",m,flags=f) # ##### titles
         m = re.sub(r"^#### (.*?)\n", r"<h4>\1</h4>\n",m,flags=f) # #### titles
@@ -251,13 +291,101 @@ def convert(content,force=None):
 
 
 
-def addPreferencesPage():
+def add_preferences_page():
 
     """adds the Help preferences page to the UI"""
 
     import FreeCADGui
     page = os.path.join(os.path.dirname(__file__),"dlgPreferencesHelp.ui")
     FreeCADGui.addPreferencePage(page,QT_TRANSLATE_NOOP("QObject", "General"))
+
+
+
+def add_menu():
+
+    """adds the Help menu of FreeCAD"""
+
+    import FreeCADGui
+    if hasattr(FreeCADGui,"HelpMenu"):
+        mb = FreeCADGui.getMainWindow().menuBar()
+        mb.addMenu(FreeCADGui.HelpMenu)
+
+
+
+def build_menu():
+
+    """creates and populates a help menu. Menu creation takes several
+    seconds to fullfill due to the big number of entries."""
+
+    import FreeCADGui
+    from PySide import QtCore, QtGui
+    menu = QtGui.QMenu(translate("Help","Help"))
+    menu.setObjectName("Help")
+
+    # On the web
+    sub =  QtGui.QMenu(translate("Help","On the web"), menu)
+    for it in MENU_LINKS:
+        act = QtGui.QAction(it[0], sub)
+        act.setToolTip(it[1])
+        act.triggered.connect(lambda f=show,arg=it[1]:f(arg))
+        sub.addAction(act)
+    menu.addMenu(sub)
+
+    # Documentation
+    cache = os.path.join(FreeCAD.getUserAppDataDir(),"Help","menu.md")
+    if not os.path.exists(cache):
+        get_menu_structure()
+    if os.path.exists(cache):
+        doc =  QtGui.QMenu(translate("Help","Documentation"), menu)
+        act = QtGui.QAction("Index", doc)
+        act.setShortcut("F1")
+        act.setToolTip(translate("Help","Shows the index page of the FreeCAD documentation"))
+        act.triggered.connect(lambda: show("Main Page"))
+        doc.addAction(act)
+        with open(cache) as f:
+            for line in f:
+                name = line[line.index("[")+1:line.index("]")]
+                link = line[line.index("(")+1:line.index(")")]
+                if line.startswith("-"):
+                    sub = QtGui.QMenu(name, menu)
+                    doc.addMenu(sub)
+                else:
+                    act = QtGui.QAction(name, sub)
+                    act.setToolTip(link)
+                    act.triggered.connect(lambda f=show,arg=link:f(arg))
+                    sub.addAction(act)
+        menu.addMenu(doc)
+
+    # Special FreeCAD Help commands
+    for it in MENU_COMMANDS:
+        if it[0]:
+            act = QtGui.QAction(QtGui.QIcon(":/icons/"+it[0]),it[1], menu)
+        else:
+            act = QtGui.QAction(it[1], menu)
+        if it[2]:
+            act.setShortcut(it[2])
+        act.triggered.connect(lambda f=FreeCADGui.runCommand,arg=it[3]:f(arg))
+        menu.addAction(act)
+
+    # store menu to FreeCAD for faster access and possible modification by addons
+    FreeCADGui.HelpMenu = menu
+
+
+
+def get_menu_structure():
+
+    """fetches menu structure from documentation"""
+
+    location = get_location("Online Help Toc")
+    if not location:
+        return
+    md = get_contents(location)
+    d = os.path.join(FreeCAD.getUserAppDataDir(),"Help")
+    if not os.path.isdir(d):
+        os.makedirs(d)
+    cache = os.path.join(d,"menu.md")
+    with open(cache,"w") as f:
+        f.write(md)
 
 
 
@@ -286,6 +414,8 @@ def openBrowserHTML(html,baseurl,title,icon,dialog=False):
         dock = mw.findChild(QtWidgets.QDockWidget,"HelpWidget")
         if dock:
             PREFS.SetBool("dockWidgetFloat",dock.isFloating())
+            PREFS.SetInt("dockWidgetWidth",dock.width())
+            PREFS.SetInt("dockWidgetHeight",dock.height())
 
     # a custom page that handles .md links
     class HelpPage(QtWebEngineWidgets.QWebEnginePage):
@@ -302,16 +432,20 @@ def openBrowserHTML(html,baseurl,title,icon,dialog=False):
     if dialog:
         area = PREFS.GetInt("dockWidgetArea",2)
         floating = PREFS.GetBool("dockWidgetFloat",True)
+        height = PREFS.GetBool("dockWidgetWidth",200)
+        width = PREFS.GetBool("dockWidgetHeight",300)
         dock = mw.findChild(QtWidgets.QDockWidget,"HelpWidget")
         if not dock:
             dock = QtWidgets.QDockWidget()
             dock.setObjectName("HelpWidget")
             mw.addDockWidget(getDockArea(area),dock)
             dock.setFloating(floating)
+            dock.setGeometry(dock.x(),dock.y(),width,height)
             dock.dockLocationChanged.connect(onDockLocationChanged)
         dock.setWidget(view)
         dock.setWindowTitle(title)
         dock.setWindowIcon(QtGui.QIcon(icon))
+        dock.show()
     else:
         mdi = mw.findChild(QtWidgets.QMdiArea)
         sw = mdi.addSubWindow(view)
