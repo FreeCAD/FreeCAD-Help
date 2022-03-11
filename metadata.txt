@@ -1,0 +1,1 @@
+optionalpylibs=metadata,pypandoc
