@@ -7,7 +7,7 @@
   <maintainer email="yorik@uncreated.net">Yorik van Havre</maintainer>
   <license file="LICENSE">LGPLv2.1</license>
   <url type="repository" branch="main">https://github.com/yorikvanhavre/FreeCAD-Help</url>
-  <!-- No icon yet <icon></icon> -->
+  <icon>icons/help.svg</icon>
 
   <content>
     <workbench>
