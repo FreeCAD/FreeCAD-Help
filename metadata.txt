@@ -1,1 +1,1 @@
-optionalpylibs=metadata,pypandoc
+optionalpylibs=markdown,pypandoc
