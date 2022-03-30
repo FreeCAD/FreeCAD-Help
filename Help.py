@@ -152,7 +152,10 @@ def get_location(page):
     if PREFS.GetBool("optionOnline",True):
         location = PREFS.GetString("URL","")
         if not location:
-            location = "https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki"
+            if PREFS.GetBool("optionBrowser",True):
+                location = "https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/"
+            else:
+                location = "https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki"
         if (page in SUBSTITUTES) and not ("wiki." in location):
             page = SUBSTITUTES[page]
         if page.endswith("README") and location.endswith("wiki"):
