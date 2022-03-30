@@ -43,7 +43,6 @@ Basic usage:
 
 Preferences keys (in "User parameter:BaseApp/Preferences/Mod/Help"):
 
-    UseHelpModule (bool): if the FreeCAD help system uses this module or not (temporary)
     optionBrowser/optionTab/optionDialog (bool): Where to open the help dialog
     optionOnline/optionOffline (bool): where to fetch the documentation from
     URL (string): online location
@@ -79,7 +78,7 @@ SUBSTITUTES =   { "Main_Page":             "README",
                   "Online_Help_Startpage": "README",
                 }
 
-def show(page,view=None):
+def show(page,view=None,conv=None):
 
     """
     show(page,view=None):
@@ -89,7 +88,9 @@ def show(page,view=None):
     or HTML file. If view is given (an instance of openBrowserHTML.HelpPage or
     any other object with a 'setHtml()' method), the page will be
     rendered there, otherwise a new tab/widget will be created according to
-    preferences settings.
+    preferences settings. If conv is given (markdown, pandoc, github, builtin or
+    none), the corresponding markdown conversion method is used. Otherwise, the
+    module will use the best available.
     In non-GUI mode, this function simply outputs the markdown or HTML text.
     """
 
@@ -100,7 +101,7 @@ def show(page,view=None):
         FreeCAD.Console.PrintError(LOCTXT+"\n")
         return
     md = get_contents(location)
-    html = convert(md)
+    html = convert(md,conv)
     baseurl = os.path.dirname(location) + "/"
     if baseurl.startswith("/"):
         baseurl = "file://" + baseurl
@@ -189,7 +190,7 @@ def get_contents(location):
     """retrieves text contents of a given page"""
 
     if location.startswith("http"):
-        import urllib.request # otherwise it fails on first run??
+        import urllib.request
         try:
             r = urllib.request.urlopen(location)
         except:
@@ -208,12 +209,13 @@ def get_contents(location):
 def convert(content,force=None):
 
     """converts the given markdown code to html. Force can be None (automatic)
-    or markdown, pandoc, github or raw"""
+    or markdown, pandoc, github or raw/builtin"""
 
     def convert_markdown(m):
         try:
             import markdown
-            return markdown.markdown(m,extensions=[markdown.extensions.codehilite])
+            from markdown.extensions import codehilite
+            return markdown.markdown(m,extensions=['codehilite'])
         except:
             return None
 
@@ -226,8 +228,11 @@ def convert(content,force=None):
 
     def convert_github(m):
         try:
+            import json
+            import urllib.request
             data = {"text": m, "mode": "markdown"}
-            return urllib.request.urlopen("https://api.github.com/markdown",json=data).text
+            bdata = json.dumps(data).encode('utf-8')
+            return urllib.request.urlopen("https://api.github.com/markdown",data=bdata).read().decode("utf8")
         except:
             return None
 
@@ -257,13 +262,15 @@ def convert(content,force=None):
         html = convert_pandoc(content)
     elif force == "github":
         html = convert_github(content)
-    elif force == "raw":
+    elif force in ["raw","builtin"]:
         html = convert_raw(content)
+    elif force == "none":
+        return content
     else:
         # auto mode
-        html = convert_markdown(content)
+        html = convert_pandoc(content)
         if not html:
-            html = convert_pandoc(content)
+            html = convert_markdown(content)
             if not html:
                 html = convert_raw(content)
     if not "<html" in html:

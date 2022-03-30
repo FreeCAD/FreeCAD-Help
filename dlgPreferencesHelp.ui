@@ -20,6 +20,55 @@
       <string>Help location</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>      Translation suffix:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="Gui::PrefLineEdit" name="lineEdit_2">
+        <property name="toolTip">
+         <string>If you are using a documentation source that uses suffixes for languages, for example https://wiki.freecad.org, and wishes to use a transalted version, you can indicate it here, for example: /fr</string>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>Suffix</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="Gui::PrefRadioButton" name="radioOffline">
+        <property name="text">
+         <string>From disk location:</string>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>optionOffline</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="Gui::PrefFileChooser" name="fileChooser">
+        <property name="toolTip">
+         <string>Set this to the base folder where the markdown help files are located. You can easily download the documentation by using the Addons Manager and installing the &quot;documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location when installed via the Addons Manager ( $USERAPPDATADIR/Mod/Documentation )</string>
+        </property>
+        <property name="fileName">
+         <string/>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>Location</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="Gui::PrefLineEdit" name="lineEdit">
         <property name="toolTip">
@@ -55,52 +104,19 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="Gui::PrefFileChooser" name="fileChooser">
-        <property name="toolTip">
-         <string>Set this to the base folder where the markdown help files are located. You can easily download the documentation by using the Addons Manager and installing the &quot;documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location when installed via the Addons Manager ( $USERAPPDATADIR/Mod/Documentation )</string>
-        </property>
-        <property name="fileName">
-         <string/>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>Location</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="Gui::PrefRadioButton" name="radioOffline">
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>From disk location:</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The FreeCAD documentation can be downloaded for local use via the &lt;a href=&quot;openAddonManager.py&quot;&gt;addon manager&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>optionOffline</cstring>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
+        <property name="openExternalLinks">
+         <bool>true</bool>
         </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>      Translation suffix:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="Gui::PrefLineEdit" name="lineEdit_2">
-        <property name="toolTip">
-         <string>If you are using a documentation source that uses suffixes for languages, for example https://wiki.freecad.org, and wishes to use a transalted version, you can indicate it here, for example: /fr</string>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>Suffix</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
+        <property name="textInteractionFlags">
+         <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
         </property>
        </widget>
       </item>
@@ -208,19 +224,6 @@
        </layout>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note&lt;/span&gt;: The FreeCAD documentation can be downloaded for local use via the addon manager, or manually from &lt;a href=&quot;https://github.com/FreeCAD/FreeCAD-documentation&quot;&gt;https://github.com/FreeCAD/FreeCAD-documentation&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
     </widget>
    </item>
    <item>
