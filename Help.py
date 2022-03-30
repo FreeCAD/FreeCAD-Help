@@ -109,7 +109,7 @@ def show(page,view=None,conv=None):
     title = translate("Help","Help")+": " + pagename
     if FreeCAD.GuiUp:
         from PySide2 import QtCore,QtGui
-        if PREFS.GetBool("optionBrowser",True): # desktop web browser
+        if PREFS.GetBool("optionBrowser",False): # desktop web browser
             QtGui.QDesktopServices.openUrl(QtCore.QUrl(location))
         else:
             try:
@@ -123,7 +123,7 @@ def show(page,view=None,conv=None):
                 if view: # reusing existing view
                     view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
                     #view.parent.parent.setWindowTitle(title)
-                elif PREFS.GetBool("optionDialog",True): # floating dock window
+                elif PREFS.GetBool("optionDialog",False): # floating dock window
                     openBrowserHTML(html,baseurl,title,ICON,dialog=True)
                 else: # MDI tab
                     openBrowserHTML(html,baseurl,title,ICON)
@@ -152,7 +152,7 @@ def get_location(page):
     if PREFS.GetBool("optionOnline",True):
         location = PREFS.GetString("URL","")
         if not location:
-            if PREFS.GetBool("optionBrowser",True):
+            if PREFS.GetBool("optionBrowser",False):
                 location = "https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/"
             else:
                 location = "https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki"
