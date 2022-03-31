@@ -59,11 +59,15 @@ import FreeCAD
 translate = FreeCAD.Qt.translate
 QT_TRANSLATE_NOOP = FreeCAD.Qt.QT_TRANSLATE_NOOP
 
-ERRORTXT = translate("Help","Contents for this page could not be retrieved. Check settings under menu Edit -> Preferences -> General -> Help")
-LOCTXT = translate("Help","Help files location could not be determined. Please check Edit -> Preferences -> General -> Help")
+# texts and icons
+ERRORTXT = translate("Help","Contents for this page could not be retrieved. Please check settings under menu Edit -> Preferences -> General -> Help")
+LOCTXT = translate("Help","Help files location could not be determined. Please check settings under menu Edit -> Preferences -> General -> Help")
+LOGTXT = translate("Help","PySide2 QtWebEngineWidgets module is not available. Help rendering is done with the Web module")
 CONVERTTXT = translate("Help","There is no markdown renderer installed on your system, so this help page is rendered as is. Please install the markdown or pandoc python modules to improve the rendering of this page.")
 PREFS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Help")
 ICON = ":/icons/help-browser.svg"
+
+# menu building - not uesd yet
 MENU_LINKS =    [ [translate("Help", "Home"),             "https://freecad.org"],
                   [translate("Help", "Forum"),            "https://forum.freecad.org"],
                   [translate("Help", "Wiki"),             "https://wiki.freecad.org"],
@@ -74,6 +78,8 @@ MENU_COMMANDS = [ ["applications-python.svg", translate("Help","Auto Python modu
                   ["freecad.svg",             translate("Help","About FreeCAD"),       None,       "Std_About"],
                   ["WhatsThis.svg",           translate("Help","What's this?"),        "Shift+F1", "Std_WhatsThis"],
                 ]
+
+# redirects
 SUBSTITUTES =   { "Main_Page":             "README",
                   "Online_Help_Startpage": "README",
                 }
@@ -94,7 +100,7 @@ def show(page,view=None,conv=None):
     In non-GUI mode, this function simply outputs the markdown or HTML text.
     """
 
-    page = page.replace(" ","_") # TODO: fix: there might be spaces in the file path
+    page = underscore_page(page)
     location = get_location(page)
     FreeCAD.Console.PrintLog("Help: opening "+location+"\n")
     if not location:
@@ -102,39 +108,47 @@ def show(page,view=None,conv=None):
         return
     md = get_contents(location)
     html = convert(md,conv)
-    baseurl = os.path.dirname(location) + "/"
-    if baseurl.startswith("/"):
-        baseurl = "file://" + baseurl
+    baseurl = get_uri(location)
     pagename = os.path.basename(page.replace("_"," ").replace(".md",""))
     title = translate("Help","Help")+": " + pagename
     if FreeCAD.GuiUp:
-        from PySide2 import QtCore,QtGui
         if PREFS.GetBool("optionBrowser",False): # desktop web browser
-            try:
-                QtGui.QDesktopServices.openUrl(QtCore.QUrl(location))
-            except:
-                # some users reported problems with the above
-                import webbrowser
-                webbrowser.open_new(location)
-        else:
-            try:
-                from PySide2 import QtWebEngineWidgets
-            except:
-                # QtWebEngineWidgets not present, use the Web module
-                FreeCAD.Console.PrintLog("Help: PySide2 QtWebEngineWidgets module is not available. Rendering is done with the Web module\n")
-                import WebGui
-                WebGui.openBrowserHTML(html,baseurl,title,ICON)
-            else:
-                if view: # reusing existing view
-                    view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
-                    #view.parent.parent.setWindowTitle(title)
-                elif PREFS.GetBool("optionDialog",False): # floating dock window
-                    openBrowserHTML(html,baseurl,title,ICON,dialog=True)
-                else: # MDI tab
-                    openBrowserHTML(html,baseurl,title,ICON)
+            show_browser(location)
+        elif PREFS.GetBool("optionDialog",False): # floating dock window
+            show_dialog(html,baseurl,title,view)
+        else: # MDI tab
+            show_tab(html,baseurl,title,view)
     else:
         # console mode, we just print the output
         print(md)
+
+
+
+def underscore_page(page):
+
+    """change spaces by underscores in the given page name"""
+
+    if "/" in page:
+        page = page.split("/")
+        page[-1] = page[-1].replace(" ","_")
+        page = "/".join(page)
+    else:
+        page.replace(" ","_")
+    return page
+
+
+
+def get_uri(location):
+    
+    """returns a valid URI from a disk or network location"""
+
+    baseurl = os.path.dirname(location) + "/"
+    if baseurl.startswith("/"): # unix path
+        baseurl = "file://" + baseurl
+    if baseurl[0].isupper() and (baseurl[1] == ":"): # windows path
+        baseurl = baseurl.replace("\\","/")
+        baseurl = "file:///" + baseurl
+    return baseurl
 
 
 
@@ -190,6 +204,62 @@ def get_location(page):
             suffix = "/" + suffix
         location += suffix
     return location
+
+
+
+def show_browser(url):
+    
+    """opens the desktop browser with the given URL"""
+    
+    from PySide import QtCore,QtGui
+    try:
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
+    except:
+        # some users reported problems with the above
+        import webbrowser
+        webbrowser.open_new(url)
+
+
+
+def show_dialog(html,baseurl,title,view=None):
+    
+    """opens a dock dialog with the given html"""
+
+    if get_qtwebwidgets(html,baseurl,title):
+        if view: # reusing existing view
+            view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
+            view.parent.parent.setWindowTitle(title)
+        else:
+            openBrowserHTML(html,baseurl,title,ICON,dialog=True)
+
+
+
+def show_tab(html,baseurl,title,view=None):
+    
+    """opens a MDI tab with the given html"""
+
+    if get_qtwebwidgets(html,baseurl,title):
+        if view: # reusing existing view
+            view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
+            view.parent.parent.setWindowTitle(title)
+        else:
+            openBrowserHTML(html,baseurl,title,ICON)
+
+
+
+def get_qtwebwidgets(html,baseurl,title):
+    
+    """opens a web module view if qtwebwidgets module is not available, and returns False"""
+
+    try:
+        from PySide2 import QtCore,QtGui,QtWebEngineWidgets
+    except:
+        FreeCAD.Console.PrintLog(LOGTXT+"\n")
+        import WebGui
+        WebGui.openBrowserHTML(html,baseurl,title,ICON)
+        return False
+    else:
+        return True
 
 
 
@@ -406,7 +476,7 @@ def get_menu_structure():
 
 def openBrowserHTML(html,baseurl,title,icon,dialog=False):
 
-    """creates a browser view in the FreeCAD MDI area"""
+    """creates a browser view and adds it as a FreeCAD MDI tab or dockable dialog"""
 
     import FreeCADGui
     from PySide2 import QtCore,QtGui,QtWidgets,QtWebEngineWidgets
@@ -422,7 +492,7 @@ def openBrowserHTML(html,baseurl,title,icon,dialog=False):
         else:
             return QtCore.Qt.RightDockWidgetArea
 
-    # save dock widget location
+    # save dock widget size and location
     def onDockLocationChanged(area):
         PREFS.SetInt("dockWidgetArea",int(area))
         mw = FreeCADGui.getMainWindow()
@@ -444,6 +514,7 @@ def openBrowserHTML(html,baseurl,title,icon,dialog=False):
     page = HelpPage(None,view)
     page.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
     view.setPage(page)
+
     if dialog:
         area = PREFS.GetInt("dockWidgetArea",2)
         floating = PREFS.GetBool("dockWidgetFloat",True)
