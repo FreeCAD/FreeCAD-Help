@@ -110,7 +110,12 @@ def show(page,view=None,conv=None):
     if FreeCAD.GuiUp:
         from PySide2 import QtCore,QtGui
         if PREFS.GetBool("optionBrowser",False): # desktop web browser
-            QtGui.QDesktopServices.openUrl(QtCore.QUrl(location))
+            try:
+                QtGui.QDesktopServices.openUrl(QtCore.QUrl(location))
+            except:
+                # some users reported problems with the above
+                import webbrowser
+                webbrowser.open_new(location)
         else:
             try:
                 from PySide2 import QtWebEngineWidgets
