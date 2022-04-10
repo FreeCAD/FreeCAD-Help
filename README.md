@@ -8,7 +8,7 @@ This is a work-in-progress module aimed at replacing the entire FreeCAD Help sys
 
 It can also fetch documentation from different sources and in different formats:
 
-* From a locally installed collectipn of markdown files
+* From a locally installed collection of markdown files
 * From an online repository of markdown files
 * From an online website, such as a wiki
 
