@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>532</width>
-    <height>443</height>
+    <width>520</width>
+    <height>496</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,7 +75,7 @@
          <string>The online location of help files. If left empty, FreeCAD will automatically retrieve the documentation from its default location. You can also point this to any other repository containing markdown or html files, or the base URL of a wiki (use &quot;https://wiki.freecadweb.org&quot; for the default FreeCAD wiki).</string>
         </property>
         <property name="placeholderText">
-         <string/>
+         <string>automatic</string>
         </property>
         <property name="prefEntry" stdset="0">
          <cstring>URL</cstring>
