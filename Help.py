@@ -55,6 +55,7 @@ import os
 import urllib
 import re
 import FreeCAD
+from PySide2 import QtCore
 
 translate = FreeCAD.Qt.translate
 QT_TRANSLATE_NOOP = FreeCAD.Qt.QT_TRANSLATE_NOOP
@@ -211,14 +212,11 @@ def show_browser(url):
     
     """opens the desktop browser with the given URL"""
     
-    from PySide import QtCore,QtGui
+    from PySide2 import QtGui
     try:
-        ret = QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-        if not ret:
-            # some users reported problems with the above
-            import webbrowser
-            webbrowser.open_new(url)
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
     except:
+        # some users reported problems with the above
         import webbrowser
         webbrowser.open_new(url)
 
@@ -231,7 +229,7 @@ def show_dialog(html,baseurl,title,view=None):
     if get_qtwebwidgets(html,baseurl,title):
         if view: # reusing existing view
             view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
-            view.parent.parent.setWindowTitle(title)
+            view.parent().parent().setWindowTitle(title)
         else:
             openBrowserHTML(html,baseurl,title,ICON,dialog=True)
 
@@ -244,7 +242,7 @@ def show_tab(html,baseurl,title,view=None):
     if get_qtwebwidgets(html,baseurl,title):
         if view: # reusing existing view
             view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
-            view.parent.parent.setWindowTitle(title)
+            view.parent().parent().setWindowTitle(title)
         else:
             openBrowserHTML(html,baseurl,title,ICON)
 
@@ -255,7 +253,7 @@ def get_qtwebwidgets(html,baseurl,title):
     """opens a web module view if qtwebwidgets module is not available, and returns False"""
 
     try:
-        from PySide2 import QtCore,QtGui,QtWebEngineWidgets
+        from PySide2 import QtGui, QtWebEngineWidgets
     except:
         FreeCAD.Console.PrintLog(LOGTXT+"\n")
         import WebGui
@@ -406,7 +404,7 @@ def build_menu():
     seconds to fullfill due to the big number of entries."""
 
     import FreeCADGui
-    from PySide import QtCore, QtGui
+    from PySide2 import QtGui
     menu = QtGui.QMenu(translate("Help","Help"))
     menu.setObjectName("Help")
 
@@ -482,7 +480,7 @@ def openBrowserHTML(html,baseurl,title,icon,dialog=False):
     """creates a browser view and adds it as a FreeCAD MDI tab or dockable dialog"""
 
     import FreeCADGui
-    from PySide2 import QtCore,QtGui,QtWidgets,QtWebEngineWidgets
+    from PySide2 import QtGui, QtWidgets, QtWebEngineWidgets
 
     # turn an int into a qt dock area
     def getDockArea(area):
@@ -542,4 +540,3 @@ def openBrowserHTML(html,baseurl,title,icon,dialog=False):
         sw.setWindowIcon(QtGui.QIcon(icon))
         sw.show()
         mdi.setActiveSubWindow(sw)
-
