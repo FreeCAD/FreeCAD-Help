@@ -3,7 +3,7 @@
   <name>Help</name>
   <description>A help system for displaying FreeCAD documentation.</description>
   <version>1.0.1-alpha</version>
-  <date>2022-03-11</date>
+  <date>2022-06-08</date>
   <maintainer email="yorik@uncreated.net">Yorik van Havre</maintainer>
   <license file="LICENSE">LGPLv2.1</license>
   <url type="repository" branch="main">https://github.com/yorikvanhavre/FreeCAD-Help</url>
