@@ -2,7 +2,7 @@
 <package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
   <name>Help</name>
   <description>A help system for displaying FreeCAD documentation.</description>
-  <version>1.0.0-alpha</version>
+  <version>1.0.1-alpha</version>
   <date>2022-03-11</date>
   <maintainer email="yorik@uncreated.net">Yorik van Havre</maintainer>
   <license file="LICENSE">LGPLv2.1</license>
