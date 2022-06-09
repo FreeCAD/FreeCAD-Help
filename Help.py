@@ -214,9 +214,12 @@ def show_browser(url):
     
     from PySide2 import QtGui
     try:
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
+        ret = QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
+        if not ret:
+            # some users reported problems with the above
+            import webbrowser
+            webbrowser.open_new(url)
     except:
-        # some users reported problems with the above
         import webbrowser
         webbrowser.open_new(url)
 
