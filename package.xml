@@ -2,8 +2,8 @@
 <package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
   <name>Help</name>
   <description>A help system for displaying FreeCAD documentation.</description>
-  <version>1.0.1-alpha</version>
-  <date>2022-06-08</date>
+  <version>1.0.2</version>
+  <date>2022-06-11</date>
   <maintainer email="yorik@uncreated.net">Yorik van Havre</maintainer>
   <license file="LICENSE">LGPLv2.1</license>
   <url type="repository" branch="main">https://github.com/yorikvanhavre/FreeCAD-Help</url>
