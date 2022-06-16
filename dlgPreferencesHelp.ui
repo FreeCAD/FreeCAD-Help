@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>520</width>
-    <height>384</height>
+    <width>525</width>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -119,7 +119,7 @@ for the default FreeCAD wiki).</string>
       <item row="3" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The FreeCAD documentation can be downloaded for local use via the &lt;a href=&quot;openAddonManager.py&quot;&gt;addon manager&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>The FreeCAD documentation can be downloaded for local use via the Addons Manager (menu Tools -&gt; Addons Manager)</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
