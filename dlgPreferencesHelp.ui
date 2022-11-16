@@ -60,10 +60,10 @@ for example by entering &quot;fr&quot; to get French.</string>
        <widget class="Gui::PrefFileChooser" name="fileChooser">
         <property name="toolTip">
          <string>Set this to the base folder where the markdown help files are located.
-You can easily download the documentation by using the Addons Manager
+You can easily download the documentation by using the Addon manager
 and installing the &quot;documentation&quot; addon. If this field is left blank, FreeCAD
 will automatically search for the help files at the default location when
-installed via the Addons Manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
+installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
         </property>
         <property name="fileName">
          <string/>
@@ -119,7 +119,7 @@ for the default FreeCAD wiki).</string>
       <item row="3" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>The FreeCAD documentation can be downloaded for local use via the Addons Manager (menu Tools -&gt; Addons Manager)</string>
+         <string>The FreeCAD documentation can be downloaded for local use via the Addon manager (menu Tools -&gt; Addon manager)</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
