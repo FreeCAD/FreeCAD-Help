@@ -50,7 +50,7 @@
        <widget class="Gui::PrefFileChooser" name="fileChooser">
         <property name="toolTip">
          <string>Set this to a custom URL or the base folder where the markdown help files are located.
-You can easily download the documentation by using the Addons Manager
+You can easily download the documentation by using the Addon Manager
 and installing the &quot;documentation&quot; addon. If this field is left blank, FreeCAD
 will automatically search for the help files at the default location when
 installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
@@ -69,7 +69,7 @@ installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
       <item row="5" column="0" colspan="3">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>The FreeCAD documentation can be downloaded for offline use via the Addons Manager (menu Tools -&gt; Addons Manager)</string>
+         <string>The FreeCAD documentation can be downloaded for offline use via the Addon Manager (menu Tools -&gt; Addon Manager)</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
