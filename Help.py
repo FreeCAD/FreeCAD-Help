@@ -61,6 +61,10 @@ translate = FreeCAD.Qt.translate
 QT_TRANSLATE_NOOP = FreeCAD.Qt.QT_TRANSLATE_NOOP
 
 # texts and icons
+WIKI_URL = "https://wiki.freecad.org"
+MD_RAW_URL = "https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki"
+MD_RENDERED_URL = "https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki"
+MD_TRANSLATIONS_FOLDER = "translations"
 ERRORTXT = translate("Help","Contents for this page could not be retrieved. Please check settings under menu Edit -> Preferences -> General -> Help")
 LOCTXT = translate("Help","Help files location could not be determined. Please check settings under menu Edit -> Preferences -> General -> Help")
 LOGTXT = translate("Help","PySide2 QtWebEngineWidgets module is not available. Help rendering is done with the Web module")
@@ -68,7 +72,7 @@ CONVERTTXT = translate("Help","There is no markdown renderer installed on your s
 PREFS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Help")
 ICON = ":/icons/help-browser.svg"
 
-# menu building - not uesd yet
+# menu building - not used yet
 MENU_LINKS =    [ [translate("Help", "Home"),             "https://freecad.org"],
                   [translate("Help", "Forum"),            "https://forum.freecad.org"],
                   [translate("Help", "Wiki"),             "https://wiki.freecad.org"],
@@ -80,10 +84,6 @@ MENU_COMMANDS = [ ["applications-python.svg", translate("Help","Auto Python modu
                   ["WhatsThis.svg",           translate("Help","What's this?"),        "Shift+F1", "Std_WhatsThis"],
                 ]
 
-# redirects
-SUBSTITUTES =   { "Main_Page":             "README",
-                  "Online_Help_Startpage": "README",
-                }
 
 def show(page,view=None,conv=None):
 
@@ -140,7 +140,7 @@ def underscore_page(page):
 
 
 def get_uri(location):
-    
+
     """returns a valid URI from a disk or network location"""
 
     baseurl = os.path.dirname(location) + "/"
@@ -169,49 +169,33 @@ def get_location(page):
     page = page.replace(" ","_")
     page = page.replace("wiki/","")
     page = page.split("#")[0]
-    if PREFS.GetBool("optionOnline",True):
-        location = PREFS.GetString("URL","")
-        if not location:
-            if PREFS.GetBool("optionBrowser",False):
-                location = "https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/"
-            else:
-                location = "https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki"
-        if (page in SUBSTITUTES) and not ("wiki." in location):
-            page = SUBSTITUTES[page]
-        if page.endswith("README") and location.endswith("wiki"):
-            # use README outside the wiki folder for now...
-            location = location[:-4]
-        if not location.endswith("/"):
-            location += "/"
-        location += page
-        if not ("wiki." in location):
-            location += ".md"
-    else:
-        location = PREFS.GetString("Location","")
-        if not location:
-            location = os.path.join(FreeCAD.getUserAppDataDir(),"Mod","Documentation","wiki")
-        if (page in SUBSTITUTES):
-            page = SUBSTITUTES[page]
-        if page.endswith("README") and location.endswith("wiki"):
-            # use README outside the wiki folder for now...
-            location = location[:-4]
-        if os.path.exists(os.path.join(location,page+".html")):
-            location = os.path.join(location,page)
-        else:
-            location = os.path.join(location,page+".md")
     suffix = PREFS.GetString("Suffix","")
     if suffix:
         if not suffix.startswith("/"):
             suffix = "/" + suffix
-        location += suffix
+    if PREFS.GetBool("optionWiki",False):
+        location = WIKI_URL + "/" + page + suffix
+    elif PREFS.GetBool("optionMarkdown",True):
+        if PREFS.GetBool("optionBrowser",False):
+            location = MD_RENDERED_URL
+        else:
+            location = MD_RAW_URL
+        if suffix:
+            location += "/" + MD_TRANSLATIONS_FOLDER + suffix
+        location += "/" + page + ".md"
+    elif PREFS.GetBool("optionCustom",False):
+        location = PREFS.GetString("Location","")
+        if not location:
+            location = os.path.join(FreeCAD.getUserAppDataDir(),"Mod","Documentation","wiki")
+        location += page + "md"
     return location
 
 
 
 def show_browser(url):
-    
+
     """opens the desktop browser with the given URL"""
-    
+
     from PySide2 import QtGui
     try:
         ret = QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
@@ -226,7 +210,7 @@ def show_browser(url):
 
 
 def show_dialog(html,baseurl,title,view=None):
-    
+
     """opens a dock dialog with the given html"""
 
     if get_qtwebwidgets(html,baseurl,title):
@@ -239,7 +223,7 @@ def show_dialog(html,baseurl,title,view=None):
 
 
 def show_tab(html,baseurl,title,view=None):
-    
+
     """opens a MDI tab with the given html"""
 
     if get_qtwebwidgets(html,baseurl,title):
@@ -252,7 +236,7 @@ def show_tab(html,baseurl,title,view=None):
 
 
 def get_qtwebwidgets(html,baseurl,title):
-    
+
     """opens a web module view if qtwebwidgets module is not available, and returns False"""
 
     try:

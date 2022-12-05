@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>525</width>
-    <height>410</height>
+    <width>467</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,50 +17,40 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Help location</string>
+      <string>Help files location</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>      Translation suffix:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="Gui::PrefLineEdit" name="lineEdit_2">
-        <property name="toolTip">
-         <string>If the documentation source supports page suffixes
-for languages, for example https://wiki.freecad.org,
-and wish to use a translated version, indicate it here,
-for example by entering &quot;fr&quot; to get French.</string>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>Suffix</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item row="4" column="0">
        <widget class="Gui::PrefRadioButton" name="radioOffline">
+        <property name="toolTip">
+         <string>The fiels will be fetched from a custom location that can be online (if the path begins with http) or a folder on your computer</string>
+        </property>
         <property name="text">
-         <string>From disk location:</string>
+         <string>Custom location</string>
         </property>
         <property name="prefEntry" stdset="0">
-         <cstring>optionOffline</cstring>
+         <cstring>optionCustom</cstring>
         </property>
         <property name="prefPath" stdset="0">
          <cstring>Mod/Help</cstring>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="text">
+         <string>    Translation suffix:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
        <widget class="Gui::PrefFileChooser" name="fileChooser">
         <property name="toolTip">
-         <string>Set this to the base folder where the markdown help files are located.
-You can easily download the documentation by using the Addon manager
+         <string>Set this to a custom URL or the base folder where the markdown help files are located.
+You can easily download the documentation by using the Addons Manager
 and installing the &quot;documentation&quot; addon. If this field is left blank, FreeCAD
 will automatically search for the help files at the default location when
 installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
@@ -76,50 +66,10 @@ installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="Gui::PrefLineEdit" name="lineEdit">
-        <property name="toolTip">
-         <string>The online location of help files.
-If left empty, FreeCAD will automatically retrieve the documentation
-from its default location.
-You can also point this to any other repository containing markdown
-or html files, or the base URL of a wiki (use &quot;https://wiki.freecad.org&quot;
-for the default FreeCAD wiki).</string>
-        </property>
-        <property name="placeholderText">
-         <string>automatic</string>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>URL</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="Gui::PrefRadioButton" name="radioOnline">
-        <property name="toolTip">
-         <string>With this setting activated, </string>
-        </property>
-        <property name="text">
-         <string>Online:</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>optionOnline</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
+      <item row="5" column="0" colspan="3">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>The FreeCAD documentation can be downloaded for local use via the Addon manager (menu Tools -&gt; Addon manager)</string>
+         <string>The FreeCAD documentation can be downloaded for offline use via the Addons Manager (menu Tools -&gt; Addons Manager)</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -129,6 +79,60 @@ for the default FreeCAD wiki).</string>
         </property>
         <property name="textInteractionFlags">
          <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="Gui::PrefRadioButton" name="radioButton">
+        <property name="toolTip">
+         <string>Help files will be fetched from the FreeCAD wiki</string>
+        </property>
+        <property name="text">
+         <string>Wiki (online)</string>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>optionWiki</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="Gui::PrefRadioButton" name="radioOnline">
+        <property name="toolTip">
+         <string>Help files will be fetched from the official FreeCAD documenatation in Markdown format</string>
+        </property>
+        <property name="text">
+         <string>Markdown (online)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>optionMarkdown</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="Gui::PrefLineEdit" name="lineEdit_2">
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>A translation suffix to use, for example &quot;fr&quot; to get French translation of the documentation.</string>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>Suffix</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
         </property>
        </widget>
       </item>
