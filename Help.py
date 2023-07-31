@@ -231,7 +231,10 @@ def show_tab(html,baseurl,title,view=None):
             view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
             view.parent().parent().setWindowTitle(title)
         else:
-            openBrowserHTML(html,baseurl,title,ICON)
+            # the line below causes a crash with current Qt5 version
+            # openBrowserHTML(html,baseurl,title,ICON)
+            import WebGui
+            WebGui.openBrowserHTML(html,baseurl,title,ICON)
 
 
 
