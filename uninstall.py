@@ -24,12 +24,15 @@
 import FreeCAD
 from PySide import QtGui
 
-reply = QtGui.QMessageBox.question(None, "Keep addon settings?", 
-        "Do you wish to keep the preferences settings for this addon? If yes, when reinstalled, the current settings will still be present.",
-        QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+reply = QtGui.QMessageBox.question(
+    None,
+    "Keep addon settings?",
+    "Do you wish to keep the preferences settings for this addon? If yes, when reinstalled, the current settings will still be present.",
+    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+    QtGui.QMessageBox.Yes,
+)
 if reply == QtGui.QMessageBox.Yes:
     pass
 if reply == QtGui.QMessageBox.No:
     p = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod")
     p.RemGroup("Help")
-

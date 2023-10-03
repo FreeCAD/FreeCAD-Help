@@ -73,10 +73,7 @@ PREFS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Help")
 ICON = ":/icons/help-browser.svg"
 
 
-
-
 def show(page, view=None, conv=None):
-
     """
     show(page,view=None, conv=None):
     Opens a help viewer and shows the given help page.
@@ -93,58 +90,52 @@ def show(page, view=None, conv=None):
 
     page = underscore_page(page)
     location = get_location(page)
-    FreeCAD.Console.PrintLog("Help: opening "+location+"\n")
+    FreeCAD.Console.PrintLog("Help: opening " + location + "\n")
     if not location:
-        FreeCAD.Console.PrintError(LOCTXT+"\n")
+        FreeCAD.Console.PrintError(LOCTXT + "\n")
         return
     md = get_contents(location)
-    html = convert(md,conv)
+    html = convert(md, conv)
     baseurl = get_uri(location)
-    pagename = os.path.basename(page.replace("_"," ").replace(".md",""))
-    title = translate("Help","Help")+": " + pagename
+    pagename = os.path.basename(page.replace("_", " ").replace(".md", ""))
+    title = translate("Help", "Help") + ": " + pagename
     if FreeCAD.GuiUp:
-        if PREFS.GetBool("optionBrowser",False): # desktop web browser
+        if PREFS.GetBool("optionBrowser", False):  # desktop web browser
             show_browser(location)
-        elif PREFS.GetBool("optionDialog",False): # floating dock window
-            show_dialog(html,baseurl,title,view)
-        else: # MDI tab - default
-            show_tab(html,baseurl,title,view)
+        elif PREFS.GetBool("optionDialog", False):  # floating dock window
+            show_dialog(html, baseurl, title, view)
+        else:  # MDI tab - default
+            show_tab(html, baseurl, title, view)
     else:
         # console mode, we just print the output
         print(md)
 
 
-
 def underscore_page(page):
-
     """change spaces by underscores in the given page name"""
 
     if "/" in page:
         page = page.split("/")
-        page[-1] = page[-1].replace(" ","_")
+        page[-1] = page[-1].replace(" ", "_")
         page = "/".join(page)
     else:
-        page.replace(" ","_")
+        page.replace(" ", "_")
     return page
 
 
-
 def get_uri(location):
-
     """returns a valid URI from a disk or network location"""
 
     baseurl = os.path.dirname(location) + "/"
-    if baseurl.startswith("/"): # unix path
+    if baseurl.startswith("/"):  # unix path
         baseurl = "file://" + baseurl
-    if baseurl[0].isupper() and (baseurl[1] == ":"): # windows path
-        baseurl = baseurl.replace("\\","/")
+    if baseurl[0].isupper() and (baseurl[1] == ":"):  # windows path
+        baseurl = baseurl.replace("\\", "/")
         baseurl = "file:///" + baseurl
     return baseurl
 
 
-
 def get_location(page):
-
     """retrieves the location (online or offline) of a given page"""
 
     location = ""
@@ -155,107 +146,105 @@ def get_location(page):
     # offline location
     if os.path.exists(page):
         return page
-    page = page.replace(".md","")
-    page = page.replace(" ","_")
-    page = page.replace("wiki/","")
+    page = page.replace(".md", "")
+    page = page.replace(" ", "_")
+    page = page.replace("wiki/", "")
     page = page.split("#")[0]
-    suffix = PREFS.GetString("Suffix","")
+    suffix = PREFS.GetString("Suffix", "")
     if suffix:
         if not suffix.startswith("/"):
             suffix = "/" + suffix
-    if PREFS.GetBool("optionWiki",True):  # default
+    if PREFS.GetBool("optionWiki", True):  # default
         location = WIKI_URL + "/" + page + suffix
-    elif PREFS.GetBool("optionMarkdown",False):
-        if PREFS.GetBool("optionBrowser",False):
+    elif PREFS.GetBool("optionMarkdown", False):
+        if PREFS.GetBool("optionBrowser", False):
             location = MD_RENDERED_URL
         else:
             location = MD_RAW_URL
         if suffix:
             location += "/" + MD_TRANSLATIONS_FOLDER + suffix
         location += "/" + page + ".md"
-    elif PREFS.GetBool("optionGithub",False):
+    elif PREFS.GetBool("optionGithub", False):
         location = MD_RENDERED_URL
         if suffix:
             location += "/" + MD_TRANSLATIONS_FOLDER + suffix
         location += "/" + page + ".md"
-    elif PREFS.GetBool("optionCustom",False):
-        location = PREFS.GetString("Location","")
+    elif PREFS.GetBool("optionCustom", False):
+        location = PREFS.GetString("Location", "")
         if not location:
-            location = os.path.join(FreeCAD.getUserAppDataDir(),"Mod","Documentation","wiki")
+            location = os.path.join(
+                FreeCAD.getUserAppDataDir(), "Mod", "Documentation", "wiki"
+            )
         location += page + "md"
     return location
 
 
-
 def show_browser(url):
-
     """opens the desktop browser with the given URL"""
 
     from PySide2 import QtGui
+
     try:
         ret = QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
         if not ret:
             # some users reported problems with the above
             import webbrowser
+
             webbrowser.open_new(url)
     except:
         import webbrowser
+
         webbrowser.open_new(url)
 
 
-
 def show_dialog(html, baseurl, title, view=None):
-
     """opens a dock dialog with the given html"""
 
-    if get_qtwebwidgets(html,baseurl,title):
-        if view: # reusing existing view
-            view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
+    if get_qtwebwidgets(html, baseurl, title):
+        if view:  # reusing existing view
+            view.setHtml(html, baseUrl=QtCore.QUrl(baseurl))
             view.parent().parent().setWindowTitle(title)
         else:
-            openBrowserHTML(html,baseurl,title,ICON,dialog=True)
-
+            openBrowserHTML(html, baseurl, title, ICON, dialog=True)
 
 
 def show_tab(html, baseurl, title, view=None):
-
     """opens a MDI tab with the given html"""
 
-    if get_qtwebwidgets(html,baseurl,title):
-        if view: # reusing existing view
-            view.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
+    if get_qtwebwidgets(html, baseurl, title):
+        if view:  # reusing existing view
+            view.setHtml(html, baseUrl=QtCore.QUrl(baseurl))
             view.parent().parent().setWindowTitle(title)
         else:
             # the line below causes a crash with current Qt5 version
             # openBrowserHTML(html,baseurl,title,ICON)
             # so ATM we use the WebGui browser instead
             import WebGui
-            WebGui.openBrowserHTML(html,baseurl,title,ICON)
 
+            WebGui.openBrowserHTML(html, baseurl, title, ICON)
 
 
 def get_qtwebwidgets(html, baseurl, title):
-
     """opens a web module view if qtwebwidgets module is not available, and returns False"""
 
     try:
         from PySide2 import QtGui, QtWebEngineWidgets
     except:
-        FreeCAD.Console.PrintLog(LOGTXT+"\n")
+        FreeCAD.Console.PrintLog(LOGTXT + "\n")
         import WebGui
-        WebGui.openBrowserHTML(html,baseurl,title,ICON)
+
+        WebGui.openBrowserHTML(html, baseurl, title, ICON)
         return False
     else:
         return True
 
 
-
 def get_contents(location):
-
     """retrieves text contents of a given page"""
 
     if location.startswith("http"):
         import urllib.request
+
         try:
             r = urllib.request.urlopen(location)
         except:
@@ -264,15 +253,13 @@ def get_contents(location):
         return contents
     else:
         if os.path.exists(location):
-            with open(location, mode='r', encoding='utf8') as f:
+            with open(location, mode="r", encoding="utf8") as f:
                 contents = f.read()
             return contents
     return ERRORTXT
 
 
-
 def convert(content, force=None):
-
     """converts the given markdown code to html. Force can be None (automatic)
     or markdown, pandoc, github or raw/builtin"""
 
@@ -280,14 +267,16 @@ def convert(content, force=None):
         try:
             import markdown
             from markdown.extensions import codehilite
-            return markdown.markdown(m,extensions=['codehilite'])
+
+            return markdown.markdown(m, extensions=["codehilite"])
         except:
             return None
 
     def convert_pandoc(m):
         try:
             import pypandoc
-            return pypandoc.convert_text(m,"html",format="md")
+
+            return pypandoc.convert_text(m, "html", format="md")
         except:
             return None
 
@@ -295,25 +284,32 @@ def convert(content, force=None):
         try:
             import json
             import urllib.request
+
             data = {"text": m, "mode": "markdown"}
-            bdata = json.dumps(data).encode('utf-8')
-            return urllib.request.urlopen("https://api.github.com/markdown",data=bdata).read().decode("utf8")
+            bdata = json.dumps(data).encode("utf-8")
+            return (
+                urllib.request.urlopen("https://api.github.com/markdown", data=bdata)
+                .read()
+                .decode("utf8")
+            )
         except:
             return None
 
     def convert_raw(m):
         # simple and dirty regex-based markdown to html
-        f = re.DOTALL|re.MULTILINE
-        m = re.sub(r"^##### (.*?)\n",r"<h5>\1</h5>\n",m,flags=f) # ##### titles
-        m = re.sub(r"^#### (.*?)\n", r"<h4>\1</h4>\n",m,flags=f) # #### titles
-        m = re.sub(r"^### (.*?)\n",  r"<h3>\1</h3>\n",m,flags=f) # ### titles
-        m = re.sub(r"^## (.*?)\n",   r"<h2>\1</h2>\n",m,flags=f) # ## titles
-        m = re.sub(r"^# (.*?)\n",    r"<h1>\1</h1>\n",m,flags=f) # # titles
-        m = re.sub(r"!\[(.*?)\]\((.*?)\)", r'<img alt="\1" src="\2">',m,flags=f) # images
-        m = re.sub(r"\[(.*?)\]\((.*?)\)",  r'<a href="\2">\1</a>',m,flags=f) # links
-        m = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>",m) # bold
-        m = re.sub(r"\*(.*?)\*", r"<i>\1</i>",m) # italic
-        m = re.sub(r"\n\n", r"<br/>",m,flags=f) # double new lines
+        f = re.DOTALL | re.MULTILINE
+        m = re.sub(r"^##### (.*?)\n", r"<h5>\1</h5>\n", m, flags=f)  # ##### titles
+        m = re.sub(r"^#### (.*?)\n", r"<h4>\1</h4>\n", m, flags=f)  # #### titles
+        m = re.sub(r"^### (.*?)\n", r"<h3>\1</h3>\n", m, flags=f)  # ### titles
+        m = re.sub(r"^## (.*?)\n", r"<h2>\1</h2>\n", m, flags=f)  # ## titles
+        m = re.sub(r"^# (.*?)\n", r"<h1>\1</h1>\n", m, flags=f)  # # titles
+        m = re.sub(
+            r"!\[(.*?)\]\((.*?)\)", r'<img alt="\1" src="\2">', m, flags=f
+        )  # images
+        m = re.sub(r"\[(.*?)\]\((.*?)\)", r'<a href="\2">\1</a>', m, flags=f)  # links
+        m = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", m)  # bold
+        m = re.sub(r"\*(.*?)\*", r"<i>\1</i>", m)  # italic
+        m = re.sub(r"\n\n", r"<br/>", m, flags=f)  # double new lines
         m += "\n<br/><hr/><small>" + CONVERTTXT + "</small>"
         return m
 
@@ -327,7 +323,7 @@ def convert(content, force=None):
         html = convert_pandoc(content)
     elif force == "github":
         html = convert_github(content)
-    elif force in ["raw","builtin"]:
+    elif force in ["raw", "builtin"]:
         html = convert_raw(content)
     elif force == "none":
         return content
@@ -339,52 +335,52 @@ def convert(content, force=None):
             if not html:
                 html = convert_raw(content)
     if not "<html" in html:
-        html = "<html>\n<head>\n<meta charset=\"utf-8\"/>\n</head>\n<body>\n\n"+html+"</body>\n</html>"
+        html = (
+            '<html>\n<head>\n<meta charset="utf-8"/>\n</head>\n<body>\n\n'
+            + html
+            + "</body>\n</html>"
+        )
     # insert css
     css = None
-    cssfile = PREFS.GetString("StyleSheet","")
+    cssfile = PREFS.GetString("StyleSheet", "")
     if not cssfile:
-        cssfile = os.path.join(os.path.dirname(__file__),"default.css")
-    if False: # linked CSS file
+        cssfile = os.path.join(os.path.dirname(__file__), "default.css")
+    if False:  # linked CSS file
         # below code doesn't work in FreeCAD apparently because it prohibits cross-URL stuff
-        cssfile = urllib.parse.urljoin('file:',urllib.request.pathname2url(cssfile))
-        css = "<link rel=\"stylesheet\" type=\"text/css\" href=\""+cssfile+"\"/>"
+        cssfile = urllib.parse.urljoin("file:", urllib.request.pathname2url(cssfile))
+        css = '<link rel="stylesheet" type="text/css" href="' + cssfile + '"/>'
     else:
         if os.path.exists(cssfile):
             with open(cssfile) as cf:
                 css = cf.read()
             if css:
-                css = "<style>\n"+css+"\n</style>"
+                css = "<style>\n" + css + "\n</style>"
         else:
-            print("Debug: Help: Unable to open css file:",cssfile)
+            print("Debug: Help: Unable to open css file:", cssfile)
     if css:
-        html = html.replace("</head>",css+"\n</head>")
+        html = html.replace("</head>", css + "\n</head>")
     return html
 
 
-
 def add_preferences_page():
-
     """adds the Help preferences page to the UI"""
 
     import FreeCADGui
-    page = os.path.join(os.path.dirname(__file__),"dlgPreferencesHelp.ui")
-    FreeCADGui.addPreferencePage(page,QT_TRANSLATE_NOOP("QObject", "General"))
 
+    page = os.path.join(os.path.dirname(__file__), "dlgPreferencesHelp.ui")
+    FreeCADGui.addPreferencePage(page, QT_TRANSLATE_NOOP("QObject", "General"))
 
 
 def add_language_path():
-    
     """registers the Help translations to FreeCAD"""
 
     import FreeCADGui
-    lpath = os.path.join(os.path.dirname(__file__),"translations")
+
+    lpath = os.path.join(os.path.dirname(__file__), "translations")
     FreeCADGui.addLanguagePath(lpath)
 
 
-
 def openBrowserHTML(html, baseurl, title, icon, dialog=False):
-
     """creates a browser view and adds it as a FreeCAD MDI tab or dockable dialog"""
 
     import FreeCADGui
@@ -403,39 +399,39 @@ def openBrowserHTML(html, baseurl, title, icon, dialog=False):
 
     # save dock widget size and location
     def onDockLocationChanged(area):
-        PREFS.SetInt("dockWidgetArea",int(area))
+        PREFS.SetInt("dockWidgetArea", int(area))
         mw = FreeCADGui.getMainWindow()
-        dock = mw.findChild(QtWidgets.QDockWidget,"HelpWidget")
+        dock = mw.findChild(QtWidgets.QDockWidget, "HelpWidget")
         if dock:
-            PREFS.SetBool("dockWidgetFloat",dock.isFloating())
-            PREFS.SetInt("dockWidgetWidth",dock.width())
-            PREFS.SetInt("dockWidgetHeight",dock.height())
+            PREFS.SetBool("dockWidgetFloat", dock.isFloating())
+            PREFS.SetInt("dockWidgetWidth", dock.width())
+            PREFS.SetInt("dockWidgetHeight", dock.height())
 
     # a custom page that handles .md links
     class HelpPage(QtWebEngineWidgets.QWebEnginePage):
-        def acceptNavigationRequest(self, url,  _type, isMainFrame):
+        def acceptNavigationRequest(self, url, _type, isMainFrame):
             if _type == QtWebEngineWidgets.QWebEnginePage.NavigationTypeLinkClicked:
-                show(url.toString(),view=self)
-            return super().acceptNavigationRequest(url,  _type, isMainFrame)
+                show(url.toString(), view=self)
+            return super().acceptNavigationRequest(url, _type, isMainFrame)
 
     mw = FreeCADGui.getMainWindow()
     view = QtWebEngineWidgets.QWebEngineView()
-    page = HelpPage(None,view)
-    page.setHtml(html,baseUrl=QtCore.QUrl(baseurl))
+    page = HelpPage(None, view)
+    page.setHtml(html, baseUrl=QtCore.QUrl(baseurl))
     view.setPage(page)
 
     if dialog:
-        area = PREFS.GetInt("dockWidgetArea",2)
-        floating = PREFS.GetBool("dockWidgetFloat",True)
-        height = PREFS.GetBool("dockWidgetWidth",200)
-        width = PREFS.GetBool("dockWidgetHeight",300)
-        dock = mw.findChild(QtWidgets.QDockWidget,"HelpWidget")
+        area = PREFS.GetInt("dockWidgetArea", 2)
+        floating = PREFS.GetBool("dockWidgetFloat", True)
+        height = PREFS.GetBool("dockWidgetWidth", 200)
+        width = PREFS.GetBool("dockWidgetHeight", 300)
+        dock = mw.findChild(QtWidgets.QDockWidget, "HelpWidget")
         if not dock:
             dock = QtWidgets.QDockWidget()
             dock.setObjectName("HelpWidget")
-            mw.addDockWidget(getDockArea(area),dock)
+            mw.addDockWidget(getDockArea(area), dock)
             dock.setFloating(floating)
-            dock.setGeometry(dock.x(),dock.y(),width,height)
+            dock.setGeometry(dock.x(), dock.y(), width, height)
             dock.dockLocationChanged.connect(onDockLocationChanged)
         dock.setWidget(view)
         dock.setWindowTitle(title)
