@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>467</width>
-    <height>474</height>
+    <width>504</width>
+    <height>549</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,13 +17,32 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Help files location</string>
+      <string>Source</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="4" column="0">
+      <item row="2" column="0">
+       <widget class="Gui::PrefRadioButton" name="radioButton_2">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>This will fetch the documentation from pages rendered on github. This is currently not available...</string>
+        </property>
+        <property name="text">
+         <string>Github (online)</string>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>optionGithub</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
        <widget class="Gui::PrefRadioButton" name="radioOffline">
         <property name="toolTip">
-         <string>The fiels will be fetched from a custom location that can be online (if the path begins with http) or a folder on your computer</string>
+         <string>Set this to a custom URL or the folder where the help files are located. You can easily download the documentation for offline use by using the Addon Manager and installing the &quot;offline documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location ($USERAPPDATADIR/Mod/Documentation).</string>
         </property>
         <property name="text">
          <string>Custom location</string>
@@ -36,88 +55,7 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="text">
-         <string>    Translation suffix:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="Gui::PrefFileChooser" name="fileChooser">
-        <property name="toolTip">
-         <string>Set this to a custom URL or the base folder where the markdown help files are located.
-You can easily download the documentation by using the Addon Manager
-and installing the &quot;documentation&quot; addon. If this field is left blank, FreeCAD
-will automatically search for the help files at the default location when
-installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
-        </property>
-        <property name="fileName">
-         <string/>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>Location</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="3">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>The FreeCAD documentation can be downloaded for offline use via the Addon Manager (menu Tools -&gt; Addon Manager)</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <property name="openExternalLinks">
-         <bool>true</bool>
-        </property>
-        <property name="textInteractionFlags">
-         <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="Gui::PrefRadioButton" name="radioButton">
-        <property name="toolTip">
-         <string>Help files will be fetched from the FreeCAD wiki</string>
-        </property>
-        <property name="text">
-         <string>Wiki (online)</string>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>optionWiki</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="Gui::PrefRadioButton" name="radioOnline">
-        <property name="toolTip">
-         <string>Help files will be fetched from the official FreeCAD documenatation in Markdown format</string>
-        </property>
-        <property name="text">
-         <string>Markdown (online)</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <property name="prefEntry" stdset="0">
-         <cstring>optionMarkdown</cstring>
-        </property>
-        <property name="prefPath" stdset="0">
-         <cstring>Mod/Help</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
+      <item row="7" column="1">
        <widget class="Gui::PrefLineEdit" name="lineEdit_2">
         <property name="maximumSize">
          <size>
@@ -136,6 +74,70 @@ installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
         </property>
        </widget>
       </item>
+      <item row="6" column="1">
+       <widget class="Gui::PrefFileChooser" name="fileChooser">
+        <property name="toolTip">
+         <string>Set this to a custom URL or the folder where the help files are located. You can easily download the documentation for offline use by using the Addon Manager and installing the &quot;offline documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location ($USERAPPDATADIR/Mod/Documentation).</string>
+        </property>
+        <property name="fileName">
+         <string/>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>Location</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="text">
+         <string>    Translation suffix:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="Gui::PrefRadioButton" name="radioButton">
+        <property name="toolTip">
+         <string>The documentation pages will be fetched from the official FreeCADwiki at https://wiki.freecad.org</string>
+        </property>
+        <property name="text">
+         <string>FreeCAD Wiki (online)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>optionWiki</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="Gui::PrefRadioButton" name="radioOnline">
+        <property name="toolTip">
+         <string>The documentation pages will be fetched from an automatic markdown conversion of the FreeCAD wiki, hosted on FreeCAD's github account. This can be styled and look nicer than the wiki option, but it requires the 'markdown' python module installed for optimal results.</string>
+        </property>
+        <property name="text">
+         <string>Markdown version (online)</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <property name="prefEntry" stdset="0">
+         <cstring>optionMarkdown</cstring>
+        </property>
+        <property name="prefPath" stdset="0">
+         <cstring>Mod/Help</cstring>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -147,8 +149,11 @@ installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <widget class="Gui::PrefRadioButton" name="radioTab">
+        <property name="toolTip">
+         <string>The documentation will open in a new tab inside the FreeCAD interface.</string>
+        </property>
         <property name="text">
-         <string>In a new FreeCAD tab</string>
+         <string>In a FreeCAD tab</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -163,6 +168,9 @@ installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
       </item>
       <item>
        <widget class="Gui::PrefRadioButton" name="radioBrowser">
+        <property name="toolTip">
+         <string>The documentation will open in your default desktop browser.</string>
+        </property>
         <property name="text">
          <string>In your default web browser</string>
         </property>
@@ -178,6 +186,9 @@ installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
        <widget class="Gui::PrefRadioButton" name="radioDialog">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>The documentation will open in a dockable dialog inside the FreeCAD window, which allows you to keep it open whlle working in the 3D view.</string>
         </property>
         <property name="text">
          <string>In a separate, embeddable dialog</string>
@@ -211,8 +222,7 @@ installed via the Addon manager ( $USERAPPDATADIR/Mod/Documentation ).</string>
         <item>
          <widget class="Gui::PrefFileChooser" name="styleSheet">
           <property name="toolTip">
-           <string>You can here indicate the path to an alternative CSS file
-to be used to style the markdown pages.</string>
+           <string>You can here indicate the path to an alternative CSS file to be used to style the markdown pages. This will only work if you have selected the Markdown version above.</string>
           </property>
           <property name="prefEntry" stdset="0">
            <cstring>StyleSheet</cstring>

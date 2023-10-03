@@ -117,7 +117,7 @@ def show(page,view=None,conv=None):
             show_browser(location)
         elif PREFS.GetBool("optionDialog",False): # floating dock window
             show_dialog(html,baseurl,title,view)
-        else: # MDI tab
+        else: # MDI tab - default
             show_tab(html,baseurl,title,view)
     else:
         # console mode, we just print the output
@@ -173,13 +173,18 @@ def get_location(page):
     if suffix:
         if not suffix.startswith("/"):
             suffix = "/" + suffix
-    if PREFS.GetBool("optionWiki",False):
+    if PREFS.GetBool("optionWiki",True):  # default
         location = WIKI_URL + "/" + page + suffix
-    elif PREFS.GetBool("optionMarkdown",True):
+    elif PREFS.GetBool("optionMarkdown",False):
         if PREFS.GetBool("optionBrowser",False):
             location = MD_RENDERED_URL
         else:
             location = MD_RAW_URL
+        if suffix:
+            location += "/" + MD_TRANSLATIONS_FOLDER + suffix
+        location += "/" + page + ".md"
+    elif PREFS.GetBool("optionGithub",False):
+        location = MD_RENDERED_URL
         if suffix:
             location += "/" + MD_TRANSLATIONS_FOLDER + suffix
         location += "/" + page + ".md"
@@ -233,6 +238,7 @@ def show_tab(html,baseurl,title,view=None):
         else:
             # the line below causes a crash with current Qt5 version
             # openBrowserHTML(html,baseurl,title,ICON)
+            # so ATM we use the WebGui browser instead
             import WebGui
             WebGui.openBrowserHTML(html,baseurl,title,ICON)
 
