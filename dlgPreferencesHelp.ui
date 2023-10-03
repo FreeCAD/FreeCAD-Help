@@ -122,7 +122,7 @@
       <item row="1" column="0">
        <widget class="Gui::PrefRadioButton" name="radioOnline">
         <property name="toolTip">
-         <string>The documentation pages will be fetched from an automatic markdown conversion of the FreeCAD wiki, hosted on FreeCAD's github account. This can be styled and look nicer than the wiki option, but it requires the 'markdown' python module installed for optimal results.</string>
+         <string>The documentation pages will be fetched from an automatic markdown conversion of the FreeCAD wiki, hosted on FreeCAD's github account. This can be styled with a custom stylesheet below and can look nicer than the wiki option. The 'markdown' or 'pandoc' python module should be installed for optimal results.</string>
         </property>
         <property name="text">
          <string>Markdown version (online)</string>

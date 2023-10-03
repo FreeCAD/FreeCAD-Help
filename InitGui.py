@@ -23,3 +23,4 @@
 
 import Help
 Help.add_preferences_page()
+Help.add_language_path()
