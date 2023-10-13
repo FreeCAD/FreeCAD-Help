@@ -183,7 +183,7 @@ custom stylesheet below and can look nicer than the wiki option. The 'Markdown' 
       <item>
        <widget class="Gui::PrefRadioButton" name="radioBrowser">
         <property name="toolTip">
-         <string>The documentation will open in your default desktop browser.</string>
+         <string>The documentation will open in your default web browser.</string>
         </property>
         <property name="text">
          <string>In your default web browser</string>
