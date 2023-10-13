@@ -238,7 +238,7 @@ which allows you to keep it open whlle working in the 3D view.</string>
          <widget class="Gui::PrefFileChooser" name="styleSheet">
           <property name="toolTip">
            <string>You can here indicate the path to an alternative CSS file to be used
-to style the markdown pages. This will only work if you have selected the
+to style the Markdown pages. This will only work if you have selected the
 Markdown version above.</string>
           </property>
           <property name="prefEntry" stdset="0">
