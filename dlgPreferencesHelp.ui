@@ -42,7 +42,7 @@
       <item row="6" column="0">
        <widget class="Gui::PrefRadioButton" name="radioOffline">
         <property name="toolTip">
-         <string>Set this to a custom URL or the folder where the help files are located. You can easily download the documentation for offline use by using the Addon Manager and installing the &quot;offline documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location ($USERAPPDATADIR/Mod/Documentation).</string>
+         <string>Set this to a custom URL or the folder where the help files are located. You can easily download the documentation for offline use by using the Addon Manager and installing the &quot;offline-documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location ($USERAPPDATADIR/Mod/offline-documentation).</string>
         </property>
         <property name="text">
          <string>Custom location</string>
@@ -76,8 +76,11 @@
       </item>
       <item row="6" column="1">
        <widget class="Gui::PrefFileChooser" name="fileChooser">
+        <property name="mode">
+         <enum>Gui::FileChooser::Directory</enum>
+        </property>
         <property name="toolTip">
-         <string>Set this to a custom URL or the folder where the help files are located. You can easily download the documentation for offline use by using the Addon Manager and installing the &quot;offline documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location ($USERAPPDATADIR/Mod/Documentation).</string>
+         <string>Set this to a custom URL or the folder where the help files are located. You can easily download the documentation for offline use by using the Addon Manager and installing the &quot;offline-documentation&quot; addon. If this field is left blank, FreeCAD will automatically search for the help files at the default location ($USERAPPDATADIR/Mod/offline-documentation).</string>
         </property>
         <property name="fileName">
          <string/>
