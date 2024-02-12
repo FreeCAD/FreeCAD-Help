@@ -5,7 +5,7 @@
   <version>1.0.3</version>
   <date>2022-06-14</date>
   <maintainer email="yorik@uncreated.net">Yorik van Havre</maintainer>
-  <license file="LICENSE">LGPLv2.1</license>
+  <license file="LICENSE">LGPL-2.1-or-later</license>
   <url type="repository" branch="main">https://github.com/FreeCAD/FreeCAD-Help</url>
   <icon>icons/help.svg</icon>
 
