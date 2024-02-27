@@ -1,3 +1,7 @@
+# Warning - Obsolete module
+
+The contents of this module have been merged in FreeCAD and are available built-in starting from FreeCAD version 0.22
+
 #### Help module for FreeCAD
 
 This is the FreeCAD Help system. Its primary use is to display a documentation page. 
